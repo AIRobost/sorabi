@@ -1,0 +1,10 @@
+{
+  "name": "Sorabi 空灯",
+  "short_name": "Sorabi",
+  "lang": "ja",
+  "start_url": "./",
+  "display": "fullscreen",
+  "background_color": "#05070d",
+  "theme_color": "#05070d",
+  "icons": [{ "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }]
+}

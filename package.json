@@ -1,0 +1,20 @@
+{
+  "name": "sorabi",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "places": "node scripts/build-places.mjs"
+  },
+  "devDependencies": {
+    "@fontsource-variable/jost": "^5.3.0",
+    "@fontsource/cormorant-garamond": "^5.3.0",
+    "@fontsource/shippori-mincho": "^5.3.0",
+    "@fontsource/zen-kaku-gothic-new": "^5.3.0",
+    "typescript": "^5.5.4",
+    "vite": "^5.4.8"
+  }
+}

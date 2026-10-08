@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#05070d" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="icon" href="/icon.svg" type="image/svg+xml" />
+    <title>Sorabi 空灯</title>
+    <meta name="description" content="空を背景に描き、夜はネオンが灯る、日本国内向けの常時表示の天気" />
+  </head>
+  <body>
+    <canvas id="sky"></canvas>
+
+    <main id="stage">
+      <button id="place" class="place rv" style="--i: 0" aria-label="地点を変更">
+        <span id="place-pref" class="place-pref"></span>
+        <span class="place-line">
+          <span id="place-name" class="place-name"></span>
+          <svg viewBox="0 0 24 24" class="chev"><path d="M8 10l4 4 4-4" /></svg>
+        </span>
+      </button>
+
+      <div class="clock rv" style="--i: 1">
+        <span id="time" class="time"></span>
+        <span id="date" class="date"></span>
+      </div>
+
+      <section class="now">
+        <div class="arc rv" style="--i: 2">
+          <svg id="arc-svg" viewBox="0 0 1000 1000"></svg>
+        </div>
+        <div class="temp rv" style="--i: 2"><span id="temp">–</span><span class="deg">°</span></div>
+        <div id="cond" class="cond rv" style="--i: 3"></div>
+        <div id="range" class="range rv" style="--i: 4"></div>
+        <div id="alerts" class="alerts rv" style="--i: 5"></div>
+      </section>
+
+      <div class="rail rv" style="--i: 5">
+        <div id="rail-metrics" class="rail-metrics"></div>
+        <div id="rail-hours" class="rail-hours"></div>
+      </div>
+
+      <button id="more" class="more rv" style="--i: 5" aria-label="詳細を表示">
+        <span id="updated"></span>
+        <span class="more-label">詳細<svg viewBox="0 0 24 24" class="chev"><path d="M10 8l4 4-4 4" /></svg></span>
+      </button>
+    </main>
+
+    <button id="gear" class="gear" aria-label="設定">
+      <svg viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="3" />
+        <path d="M12 2.8v2.4M12 18.8v2.4M2.8 12h2.4M18.8 12h2.4M5.5 5.5l1.7 1.7M16.8 16.8l1.7 1.7M5.5 18.5l1.7-1.7M16.8 7.2l1.7-1.7" />
+      </svg>
+    </button>
+
+    <aside id="settings" aria-hidden="true">
+      <button id="settings-close" class="icon-btn" aria-label="閉じる">
+        <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" /></svg>
+      </button>
+      <h1>設定</h1>
+      <p class="st-brand">Sorabi <span>空灯</span></p>
+
+      <section>
+        <h2>地点</h2>
+        <button id="settings-place" class="st-row">
+          <span id="settings-place-name"></span>
+          <em>変更</em>
+        </button>
+      </section>
+
+      <section>
+        <h2>デザイン</h2>
+        <div class="st-designs">
+          <button data-design="a"><b>墨</b><span>明朝と縦組み</span></button>
+          <button data-design="b"><b>計</b><span>計器のような罫線</span></button>
+          <button data-design="c"><b>環</b><span>24時間の文字盤</span></button>
+        </div>
+      </section>
+
+      <section>
+        <h2>ネオンの色</h2>
+        <div id="neon-list" class="st-neons"></div>
+        <p id="neon-label" class="st-note"></p>
+      </section>
+
+      <section>
+        <h2>ネオンのちらつき</h2>
+        <button id="shimmer-btn" class="st-row">
+          <span>文字ごとの揺らぎとまたたき</span>
+          <em id="shimmer-label"></em>
+        </button>
+      </section>
+
+      <section>
+        <h2>キーボード</h2>
+        <dl class="st-keys">
+          <dt>S</dt><dd>設定を開く・閉じる</dd>
+          <dt>1 2 3</dt><dd>デザインを切り替える</dd>
+          <dt>N</dt><dd>ネオンの色を変える</dd>
+          <dt>F</dt><dd>ちらつきのオン・オフ</dd>
+          <dt>Esc</dt><dd>開いている画面を閉じる</dd>
+        </dl>
+      </section>
+
+      <section>
+        <h2>データの出典</h2>
+        <ul class="st-credits">
+          <li><span>天気予報</span><a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo</a>(CC BY 4.0)</li>
+          <li><span>警報・注意報</span><a href="https://www.jma.go.jp/bosai/warning/" target="_blank" rel="noopener">気象庁ホームページ</a>の情報を加工して表示</li>
+          <li><span>地名と座標</span><a href="https://github.com/geolonia/japanese-addresses" target="_blank" rel="noopener">Geolonia 住所データ</a>(CC BY 4.0)</li>
+          <li><span>書体</span>しっぽり明朝、Zen Kaku Gothic New、Cormorant Garamond、Jost(SIL Open Font License)</li>
+        </ul>
+        <p class="st-note">表示は参考情報です。気温や雨量は予報モデルの値で、実際と異なることがあります。防災上の判断は、気象庁や自治体の発表を確認してください。</p>
+      </section>
+    </aside>
+
+    <aside id="panel" aria-hidden="true">
+      <button id="panel-close" class="icon-btn" aria-label="閉じる">
+        <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" /></svg>
+      </button>
+      <section id="alerts-sec" style="--i: 0" hidden>
+        <h2 id="alerts-title">警報・注意報</h2>
+        <div id="alerts-list" class="alerts-list"></div>
+      </section>
+      <section style="--i: 0">
+        <h2>24時間</h2>
+        <div id="hours" class="hours"></div>
+      </section>
+      <section style="--i: 1">
+        <h2>週間</h2>
+        <div id="days" class="days"></div>
+      </section>
+      <section style="--i: 2">
+        <h2>現在の詳細</h2>
+        <div id="metrics" class="metrics"></div>
+      </section>
+    </aside>
+
+    <div id="picker" aria-hidden="true"></div>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
