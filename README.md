@@ -7,7 +7,7 @@
 
 インストールは不要です。上のURLをブラウザで開くだけで使えます。
 
-![夜の表示](screenshots/C-ring-night.jpg)
+![夜の表示(デザイン「墨」)](screenshots/sumi-night.jpg)
 
 ## 特徴
 
