@@ -115,7 +115,8 @@ function renderPlace() {
 }
 
 function renderClock() {
-  const now = new Date()
+  // 確認用の ?hour= を付けたときは、時計も空と同じ時刻にそろえる
+  const now = new Date(sky.now())
   $('time').textContent = timeFmt.format(now)
   $('date').textContent = `${dateFmt.format(now)} ${weekdayFmt.format(now)}`
 }
@@ -198,7 +199,7 @@ function renderMetrics(w: Weather) {
 
 function renderRail(w: Weather) {
   const c = w.current
-  const now = Date.now()
+  const now = sky.now()
   const [today, tomorrow] = w.daily
   const sun: [string, number] =
     now < today.sunrise ? ['日の出', today.sunrise] : now < today.sunset ? ['日の入', today.sunset] : ['日の出', tomorrow.sunrise]
