@@ -41,18 +41,22 @@
         <div id="rail-hours" class="rail-hours"></div>
       </div>
 
-      <button id="more" class="more rv" style="--i: 5" aria-label="詳細を表示">
+      <div id="more" class="more rv" style="--i: 5">
         <span id="updated"></span>
-        <span class="more-label">詳細<svg viewBox="0 0 24 24" class="chev"><path d="M10 8l4 4-4 4" /></svg></span>
-      </button>
+        <span class="more-row">
+          <button id="gear" class="more-btn more-gear" aria-label="設定を開く">
+            <svg viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="2.6" />
+              <path d="M12 3.5v2.6M12 17.9v2.6M3.5 12h2.6M17.9 12h2.6M6 6l1.8 1.8M16.2 16.2L18 18M6 18l1.8-1.8M16.2 7.8L18 6" />
+            </svg>
+            設定
+          </button>
+          <button class="more-btn more-label" aria-label="詳細を表示">
+            詳細<svg viewBox="0 0 24 24" class="chev"><path d="M10 8l4 4-4 4" /></svg>
+          </button>
+        </span>
+      </div>
     </main>
-
-    <button id="gear" class="gear" aria-label="設定">
-      <svg viewBox="0 0 24 24">
-        <circle cx="12" cy="12" r="3" />
-        <path d="M12 2.8v2.4M12 18.8v2.4M2.8 12h2.4M18.8 12h2.4M5.5 5.5l1.7 1.7M16.8 16.8l1.7 1.7M5.5 18.5l1.7-1.7M16.8 7.2l1.7-1.7" />
-      </svg>
-    </button>
 
     <aside id="settings" aria-hidden="true">
       <button id="settings-close" class="icon-btn" aria-label="閉じる">

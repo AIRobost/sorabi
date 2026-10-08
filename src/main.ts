@@ -409,7 +409,11 @@ function setSettings(open: boolean) {
   settings.setAttribute('aria-hidden', String(!open))
   if (open) setPanel(false)
 }
-$('gear').addEventListener('click', () => setSettings(true))
+$('gear').addEventListener('click', (e) => {
+  // 画面クリック (詳細の開閉) に伝えない
+  e.stopPropagation()
+  setSettings(!settingsOpen())
+})
 $('settings-close').addEventListener('click', () => setSettings(false))
 
 // ---- デザイン切替 (1 / 2 / 3 キーでも切り替えられる) ----

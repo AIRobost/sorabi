@@ -21,8 +21,7 @@
 #stage,
 #panel,
 #picker,
-#settings,
-.gear {
+#settings {
   zoom: var(--z);
 }
 
@@ -236,14 +235,42 @@ svg {
   color: var(--dim);
   text-shadow: inherit;
 }
-.more-label {
+/* 「設定」と「詳細」を、更新時刻の下に同じ調子で並べる */
+.more-row {
   display: flex;
   align-items: center;
-  gap: 0.2em;
+  gap: 1.5em;
+}
+.more-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.3em;
+  /* 指でも押しやすいよう、見た目を変えずに当たり判定だけ広げる */
+  margin: -0.9em -0.5em;
+  padding: 0.9em 0.5em;
+  letter-spacing: inherit;
+  text-shadow: inherit;
   color: var(--fg);
+}
+.more-gear {
+  color: var(--dim);
+  transition: color 0.4s ease;
+}
+.more-gear svg {
+  width: 1.2em;
+  height: 1.2em;
+  transition: transform 0.8s var(--ease);
+}
+.more-gear:hover {
+  color: var(--fg);
+}
+.more-gear:hover svg {
+  transform: rotate(60deg);
+}
+.more-label {
   transition: transform 0.6s var(--ease);
 }
-#stage:hover .more-label {
+#stage:hover .more-gear:not(:hover) ~ .more-label {
   transform: translateX(4px);
 }
 body.open #stage.in .more {

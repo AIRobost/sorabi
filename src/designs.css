@@ -772,38 +772,6 @@ body[data-design='c'] {
 
 /* ---------- 設定 ---------- */
 
-.gear {
-  position: fixed;
-  left: 12px;
-  bottom: 12px;
-  z-index: 5;
-  width: 36px;
-  height: 36px;
-  display: grid;
-  place-items: center;
-  border-radius: 50%;
-  color: #fff;
-  opacity: 0.4;
-  transition:
-    opacity 0.6s ease,
-    background 0.4s ease,
-    transform 0.8s var(--ease);
-}
-.gear svg {
-  width: 19px;
-  height: 19px;
-}
-.gear:hover {
-  opacity: 1;
-  background: rgba(255, 255, 255, 0.1);
-  transform: rotate(60deg);
-}
-body.idle .gear,
-body.settings .gear {
-  opacity: 0;
-  pointer-events: none;
-}
-
 #settings {
   position: fixed;
   left: 18px;
@@ -996,4 +964,18 @@ body.settings #settings {
 .st-brand span {
   margin-left: 0.6em;
   font-family: 'Shippori Mincho', serif;
+}
+
+/* スマホの幅では、警報を横に並べると右下の表示や画面端にかかるので、縦に積む */
+@media (max-width: 640px) {
+  .alerts {
+    flex-direction: column;
+    flex-wrap: nowrap;
+    gap: 0.55em;
+  }
+  [data-design='c'] .alerts {
+    left: 0;
+    right: 0;
+    align-items: center;
+  }
 }
