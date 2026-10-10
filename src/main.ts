@@ -260,11 +260,15 @@ function renderArc() {
     <circle class="${day ? 'ring-sun' : 'ring-moon'}" cx="${dx}" cy="${dy}" r="${day ? 8 : 9}" />`
 }
 
+let ringTimer = 0
 function drawRing() {
   const el = $('arc-svg').parentElement!
   el.classList.remove('draw')
   void el.offsetWidth
   el.classList.add('draw')
+  // 演出が終わったら外す。残したままだと、毎分の描き直しのたびに演出がやり直されてしまう
+  clearTimeout(ringTimer)
+  ringTimer = window.setTimeout(() => el.classList.remove('draw'), 4200)
 }
 
 function render(w: Weather) {
@@ -641,7 +645,41 @@ if (cached && cached.lat === place.lat && cached.lon === place.lon && Date.now()
   render(cached.w)
   renderStatus(false)
 }
-refresh()
+// 紹介動画の撮影 (video/capture.mjs) では、天気を取得せず、外から状態を1コマずつ与える。
+// そのための操作口を、?capture を付けたときだけ公開する
+if (params.has('capture')) {
+  Object.assign(window, {
+    __sorabi: {
+      sky,
+      skyFromWeather,
+      applyDesign,
+      drawRing,
+      renderClock,
+      renderNeon,
+      renderArc,
+      renderAlerts,
+      show(w: Weather) {
+        weather = w
+        render(w)
+      },
+      // 数字のアニメーションを挟まずに気温だけ差し替える
+      setTemp(t: number) {
+        if (!weather) return
+        weather.current.temp = t
+        // 進行中の数字のアニメーションを止める (目印を数値でなくすと、以後も即座に切り替わる)
+        $('temp').dataset.v = 'x'
+        setChars($('temp'), String(round(t)))
+        renderNeon()
+      },
+      tick() {
+        renderClock()
+        renderNeon()
+        renderArc()
+        if (weather) renderRail(weather)
+      },
+    },
+  })
+} else refresh()
 
 // 初めて開いたときは、まず表示する地点を選んでもらう (閉じれば東京のまま使える)
 if (firstRun && !params.has('demo')) picker.open('表示する地点を選んでください。あとから設定で変更できます')

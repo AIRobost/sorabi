@@ -89,6 +89,26 @@ float fbm(vec2 p){
   return v;
 }
 
+// 星の1層。明るさは等級のように偏らせ (大半は暗く、ごく一部だけ明るい)、明るい星ほど大きくにじむ。
+// 瞬きは点滅ではなく、大気のゆらぎ程度のわずかな明るさの揺れにとどめる (地平線に近いほど強い)
+vec3 starLayer(vec2 uv, float scale, float density, float seed){
+  vec2 sp = gl_FragCoord.xy / uRes.y * scale;
+  vec2 si = floor(sp);
+  if (hash(si + seed) > density) return vec3(0.);
+  float m = hash(si + seed + 3.7);
+  float b = pow(m, 6.);
+  vec2 so = (vec2(hash(si + seed + 1.3), hash(si + seed + 2.1)) - .5) * .56;
+  float d = length(fract(sp) - .5 - so);
+  float r = mix(.075, .2, sqrt(b));
+  float core = exp(-d * d / (r * r));
+  float halo = b * .16 * exp(-d * d / (r * r * 7.));
+  float ph = m * 97.;
+  float wob = .5 + .27 * sin(uTime * (1.3 + m * 1.9) + ph) + .23 * sin(uTime * (2.9 + m * 3.7) + ph * 1.7);
+  float tw = 1. - mix(.2, .05, smoothstep(0., .7, uv.y)) * wob;
+  vec3 tint = mix(vec3(.74, .85, 1.), vec3(1., .9, .76), hash(si + seed + 5.3));
+  return mix(vec3(1.), tint, .5) * (core + halo) * mix(.2, 1.35, b) * tw;
+}
+
 // 雨筋の1層。列ごとに落下速度、1本ごとに長さ・太さ・傾き・明るさを変え、
 // 筋の途中にも光のムラを入れて、光を拾った水滴の透明感を出す
 float rainLayer(vec2 uv, float asp, float sc, float sp, float seed, float dens, float soft){
@@ -140,13 +160,12 @@ void main(){
 
   // 星
   float night = 1. - smoothstep(-.22, -.02, uElev);
-  vec2 sp = gl_FragCoord.xy / uRes.y * 170.;
-  vec2 si = floor(sp);
-  float sh = hash(si);
-  vec2 so = (vec2(hash(si + 1.), hash(si + 2.)) - .5) * .6;
-  float star = step(.986, sh) * smoothstep(.14, 0., length(fract(sp) - .5 - so));
-  star *= .55 + .45 * sin(uTime * (1. + sh * 3.) + sh * 40.);
-  col += star * night * (.35 + .65 * uv.y) * (1. - uCloud);
+  if (night > 0.) {
+    // 細かい星の層と、まばらで大きい星の層を重ねる
+    vec3 stars = starLayer(uv, 190., .027, 0.) + starLayer(uv, 84., .015, 41.) * 1.2;
+    // 地平線の近くは大気で減光する
+    col += stars * night * (.25 + .75 * smoothstep(0., .55, uv.y)) * (1. - uCloud);
+  }
 
   // 太陽
   vec2 sd = vec2((uv.x - uSun.x) * asp, uv.y - uSun.y);
@@ -227,7 +246,7 @@ void main(){
   // 周辺減光とディザ
   vec2 v = uv - .5;
   col *= 1. - .3 * dot(v, v);
-  col += (hash(gl_FragCoord.xy + fract(uTime) * 61.) - .5) / 170.;
+  col += (fract(52.9829189 * fract(dot(gl_FragCoord.xy + fract(uTime * 7.) * 13., vec2(.06711056, .00583715)))) - .5) / 170.;
   gl_FragColor = vec4(col, 1.);
 }`
 
@@ -269,6 +288,19 @@ export class Sky {
   setPlace(lat: number, lon: number) {
     this.lat = lat
     this.lon = lon
+  }
+
+  /** 雲が流れる速さの倍率。紹介動画の早送りで使う */
+  speed = 1
+
+  /** 天気の変化を待たずに、いますぐ目標の状態にする */
+  snap() {
+    this.cur = { ...this.target }
+  }
+
+  /** 雷光を1回光らせる */
+  strike() {
+    this.flash = 1
   }
 
   setTarget(s: SkyState) {
@@ -316,8 +348,8 @@ export class Sky {
     const c = this.cur
 
     this.time = (this.time + dt) % 3600
-    this.drift[0] = (this.drift[0] + dt * (0.006 + 0.022 * c.wind)) % 512
-    this.drift[1] = (this.drift[1] + dt * 0.0015) % 512
+    this.drift[0] = (this.drift[0] + dt * this.speed * (0.006 + 0.022 * c.wind)) % 512
+    this.drift[1] = (this.drift[1] + dt * this.speed * 0.0015) % 512
 
     this.flash *= Math.exp(-dt * 7)
     if (c.thunder > 0.5 && t > this.nextStrike) {
